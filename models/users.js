@@ -6,10 +6,6 @@ const userSchema = new Schema(
       type: String,
       required: true,
     },
-    history: {
-      type: Schema.Types.ObjectId,
-      ref: 'History',
-    },
   },
   { timestamps: true }
 );
