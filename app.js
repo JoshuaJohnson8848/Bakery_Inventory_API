@@ -5,6 +5,8 @@ const mongoose = require('mongoose');
 
 const userRouter = require('./router/users');
 const productRouter = require('./router/product');
+const historyRouter = require('./router/history');
+const adminRouter = require('./router/admin');
 
 app.use(express.json());
 
@@ -12,6 +14,8 @@ dotenv.config({ path: './config/.env' });
 
 app.use('/users', userRouter);
 app.use('/product', productRouter);
+app.use('/history', historyRouter);
+app.use('/admin', adminRouter);
 
 app.use((error, req, res, next) => {
   const data = error.data;

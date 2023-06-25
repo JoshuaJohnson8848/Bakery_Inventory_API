@@ -10,23 +10,43 @@ exports.createProduct = async (req, res, next) => {
       price: price,
     });
 
-    const createdProduct = await product.save();
+    const createdProduct = await Product.save();
 
-    return res.status(200).json({ message: 'New Product Created', product });
+    if (!createdProduct) {
+      const error = new Error('Product Not Created');
+      error.status = 404;
+      throw error;
+    }
+    return res
+      .status(200)
+      .json({ message: 'New Product Created', product: createdProduct });
   } catch (err) {
-    return new Error('Internal Server Error');
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
   }
 };
 
 exports.getProductById = async (req, res, next) => {
   try {
     const productId = req.params.id;
+
     const product = await Product.findById(productId);
+    if (!product) {
+      const error = new Error('Product Not Found');
+      error.status = 404;
+      throw error;
+    }
     return res
       .status(200)
       .json({ message: 'Product Fetched Successfully', product });
   } catch (err) {
     return new Error('Internal Server Error');
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
   }
 };
 
@@ -35,8 +55,35 @@ exports.deleteProductById = async (req, res, next) => {
     const productId = req.params.id;
 
     const deletedProduct = await Product.findByIdAndRemove(productId);
-    return res.status(200).json({ message: 'product Deleted Succesfully' });
+    if (!deletedProduct) {
+      const error = new Error('Product Not Deleted');
+      error.status = 404;
+      throw error;
+    }
+    return res.status(200).json({ message: 'Product Deleted Succesfully' });
   } catch (err) {
-    return new Error('Internal Server Error');
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getProducts = async (req, res, next) => {
+  try {
+    const products = await Product.find();
+    if (!products) {
+      const error = new Error('Products Not Found');
+      error.status = 404;
+      throw error;
+    }
+    return res
+      .status(200)
+      .json({ message: 'Products Fetched Successfully', products });
+  } catch (err) {
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
   }
 };

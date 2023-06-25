@@ -1,3 +1,5 @@
+'use strict';
+
 const User = require('../models/users');
 
 exports.createUser = async (req, res, next) => {
@@ -29,7 +31,6 @@ exports.getUserById = async (req, res, next) => {
       error.status = 404;
       throw error;
     }
-
     return res.status(200).json({ message: 'User Fetched Successfully', user });
   } catch (err) {
     if (!err.status) {
@@ -48,6 +49,26 @@ exports.getUsers = async (req, res, next) => {
       throw error;
     }
     return res.status(200).json({ message: 'Users Found Successfully', users });
+  } catch (err) {
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
+  }
+};
+
+exports.deleteUserById = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+
+    const deleteUser = await User.findByIdAndRemove(userId);
+    if (!deleteUser) {
+      const error = new Error('Users Not Deleted');
+      error.status(404);
+      throw error;
+    }
+
+    return true;
   } catch (err) {
     if (!err.status) {
       err.status = 500;

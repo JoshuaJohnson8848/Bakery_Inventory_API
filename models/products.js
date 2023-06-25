@@ -10,6 +10,10 @@ const productSchema = new Schema(
       type: Number,
       required: true,
     },
+    qty: {
+      type: Number,
+      required: true,
+    },
   },
   { timestamps: true }
 );
