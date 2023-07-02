@@ -4,13 +4,15 @@ exports.createProduct = async (req, res, next) => {
   try {
     const name = req.body.name;
     const price = req.body.price;
+    const qty = req.body.qty;
 
     const product = new Product({
       name: name,
       price: price,
+      qty: qty,
     });
 
-    const createdProduct = await Product.save();
+    const createdProduct = await product.save();
 
     if (!createdProduct) {
       const error = new Error('Product Not Created');

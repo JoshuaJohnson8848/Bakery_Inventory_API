@@ -7,7 +7,7 @@ const historySchema = new Schema(
       ref: 'User',
     },
     date: {
-      type: Date,
+      type: String,
       required: true,
     },
     items: [
@@ -22,10 +22,6 @@ const historySchema = new Schema(
         },
       },
     ],
-    total: {
-      type: Number,
-      required: true,
-    },
   },
   { timestamps: true }
 );
