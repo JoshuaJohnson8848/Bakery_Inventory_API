@@ -44,14 +44,14 @@ exports.login = async (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
 
-    const existingAdmin = await Admin.find({ email: email });
+    const existingAdmin = await Admin.findOne({ email: email });
     if (!existingAdmin) {
       const error = new Error('Email not Found');
       error.status = 404;
       throw error;
     }
     loadedAdmin = existingAdmin;
-    const hashedPass = await bcrypt.compare(password, loadedUser.password);
+    const hashedPass = await bcrypt.compare(password, loadedAdmin.password);
     if (!hashedPass) {
       const error = new Error('Incorrect Password');
       error.status = 422;

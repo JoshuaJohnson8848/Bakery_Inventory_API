@@ -45,7 +45,7 @@ exports.getUsers = async (req, res, next) => {
     const users = await User.find();
     if (!users) {
       const error = new Error('Users Not Found');
-      error.status(404);
+      error.status = 404;
       throw error;
     }
     return res.status(200).json({ message: 'Users Found Successfully', users });
@@ -63,12 +63,21 @@ exports.deleteUserById = async (req, res, next) => {
 
     const deleteUser = await User.findByIdAndRemove(userId);
     if (!deleteUser) {
-      const error = new Error('Users Not Deleted');
-      error.status(404);
+      const error = new Error('User Not Deleted');
+      error.status = 404;
       throw error;
     }
 
-    return true;
+    const deleteUserHistory = await History.findByIdAndRemove({
+      userId: userId,
+    });
+    if (!deleteUserHistory) {
+      const error = new Error('User Histories Not Deleted');
+      error.status = 404;
+      throw error;
+    }
+
+    return res.status(200).json({ message: 'User Deleted Successfully' });
   } catch (err) {
     if (!err.status) {
       err.status = 500;
