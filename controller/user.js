@@ -57,6 +57,30 @@ exports.getUsers = async (req, res, next) => {
   }
 };
 
+exports.updateUser = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const name = req.body.name;
+
+    const user = await User.findById(userId);
+    if (!user) {
+      const error = new Error('User Not Found');
+      error.status = 404;
+      throw error;
+    }
+
+    await (user.name = name);
+    await user.save();
+
+    return res.status(200).json({ message: 'User Updated Successfully', user });
+  } catch (err) {
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
+  }
+};
+
 exports.deleteUserById = async (req, res, next) => {
   try {
     const userId = req.params.id;
@@ -68,14 +92,15 @@ exports.deleteUserById = async (req, res, next) => {
       throw error;
     }
 
-    const deleteUserHistory = await History.findByIdAndRemove({
-      userId: userId,
-    });
-    if (!deleteUserHistory) {
-      const error = new Error('User Histories Not Deleted');
-      error.status = 404;
-      throw error;
-    }
+    // const history = await History.find({ userId: userId });
+
+    // console.log(history);
+
+    // if (history) {
+    //   const deleteUserHistory = await History.findByIdAndRemove({
+    //     userId: userId,
+    //   });
+    // }
 
     return res.status(200).json({ message: 'User Deleted Successfully' });
   } catch (err) {

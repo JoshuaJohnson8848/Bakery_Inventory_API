@@ -71,7 +71,26 @@ exports.login = async (req, res, next) => {
       adminId: loadedAdmin._id,
     });
   } catch (err) {
-    console.log(err);
+    // console.log(err);
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getAllAdmins = async (req, res, next) => {
+  try {
+    const admins = await Admin.find();
+    if (!admins) {
+      const error = new Error('Admins Not Found');
+      error.status = 404;
+      throw error;
+    }
+    return res
+      .status(200)
+      .json({ message: 'Admins Fetched Successfully', admins });
+  } catch (err) {
     if (!err.status) {
       err.status = 500;
     }
