@@ -1,4 +1,5 @@
 const Product = require('../models/products');
+const History = require('../models/history');
 
 exports.createProduct = async (req, res, next) => {
   try {
@@ -44,7 +45,6 @@ exports.getProductById = async (req, res, next) => {
       .status(200)
       .json({ message: 'Product Fetched Successfully', product });
   } catch (err) {
-    return new Error('Internal Server Error');
     if (!err.status) {
       err.status = 500;
     }
@@ -55,6 +55,15 @@ exports.getProductById = async (req, res, next) => {
 exports.deleteProductById = async (req, res, next) => {
   try {
     const productId = req.params.id;
+
+    const isProductInHistory = await History.exists({
+      'items.item': productId,
+    });
+    if (isProductInHistory) {
+      return res.status(200).json({
+        message: 'Product is included in history and cannot be deleted',
+      });
+    }
 
     const deletedProduct = await Product.findByIdAndRemove(productId);
     if (!deletedProduct) {

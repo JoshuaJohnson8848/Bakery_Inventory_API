@@ -1,6 +1,8 @@
 'use strict';
 
 const User = require('../models/users');
+const History = require('../models/history');
+const { Types } = require('mongoose');
 
 exports.createUser = async (req, res, next) => {
   try {
@@ -92,18 +94,17 @@ exports.deleteUserById = async (req, res, next) => {
       throw error;
     }
 
-    // const history = await History.find({ userId: userId });
+    const history = await History.find({ userId: new Types.ObjectId(userId) });
 
-    // console.log(history);
-
-    // if (history) {
-    //   const deleteUserHistory = await History.findByIdAndRemove({
-    //     userId: userId,
-    //   });
-    // }
+    if (history) {
+      const deleteUserHistory = await History.deleteMany({
+        userId: new Types.ObjectId(userId),
+      });
+    }
 
     return res.status(200).json({ message: 'User Deleted Successfully' });
   } catch (err) {
+    console.log(err);
     if (!err.status) {
       err.status = 500;
     }
