@@ -99,3 +99,35 @@ exports.getAllProducts = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.updateProuct = async (req, res, next) => {
+  try {
+    const name = req.body.name;
+    const qty = req.body.qty;
+    const price = req.body.price;
+    const productId = req.params.id;
+
+    const existingProduct = await Product.findById(productId);
+    if (!existingProduct) {
+      const error = new Error('Product Not Found');
+      error.status = 404;
+      throw error;
+    }
+
+    await (existingProduct.name = name);
+    await (existingProduct.qty = qty);
+    await (existingProduct.price = price);
+
+    await existingProduct.save();
+
+    return res.status(200).json({
+      message: 'Product Updated Successfully',
+      product: existingProduct,
+    });
+  } catch (err) {
+    if (!err.status) {
+      err.status = 500;
+    }
+    next(err);
+  }
+};
